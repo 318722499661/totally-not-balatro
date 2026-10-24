@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, minimum-scale=1, maximum-scale=1">
+  <title>Balatro</title>
+  <script>
+    if (typeof console !== 'undefined' && typeof console.debug !== 'function') {
+      console.debug = console.log.bind(console);
+    }
+    var __logger = (typeof console !== 'undefined') ? console : null;
+    if (typeof window !== 'undefined') {
+      if (typeof window.__getWebDB !== 'function') {
+        window.__getWebDB = function (name) {
+          try {
+            return window.localStorage ? window.localStorage.getItem(name) : null;
+          } catch (err) {
+            if (__logger && __logger.warn) {
+              __logger.warn('Unable to access localStorage for __getWebDB:', err);
+            }
+            return null;
+          }
+        };
+      }
+      if (typeof window.__setWebDB !== 'function') {
+        window.__setWebDB = function (name, value) {
+          try {
+            if (window.localStorage) {
+              window.localStorage.setItem(name, value);
+              return true;
+            }
+          } catch (err) {
+            if (__logger && __logger.warn) {
+              __logger.warn('Unable to access localStorage for __setWebDB:', err);
+            }
+          }
+          return false;
+        };
+      }
+    }
+  </script>
+
+  <link rel="stylesheet" type="text/css" href="theme/love.css">
+  <script src="consolewrapper.js"></script>
+
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+      width: 100%;
+      height: 100%;
+    }
+
+    #loadingCanvas,
+    #canvas {
+      display: block;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+<!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-NXQDSX4Y9W"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-NXQDSX4Y9W");</script><script src="/js/embed-banner.js"></script></head>
+
+<body>
+  <canvas id="loadingCanvas" oncontextmenu="event.preventDefault()"></canvas>
+  <canvas id="canvas" oncontextmenu="event.preventDefault()" style="visibility:hidden;"></canvas>
+
+  <script type="text/javascript">
+    // Make canvas always fill the screen
+    function resizeCanvas() {
+      const c1 = document.getElementById("loadingCanvas");
+      const c2 = document.getElementById("canvas");
+      [c1, c2].forEach(c => {
+        c.width = window.innerWidth;
+        c.height = window.innerHeight;
+      });
+    }
+    window.addEventListener("resize", resizeCanvas);
+    window.addEventListener("load", resizeCanvas);
+
+    var loadingContext = document.getElementById('loadingCanvas').getContext('2d');
+    function drawLoadingText(text) {
+      var canvas = loadingContext.canvas;
+      loadingContext.fillStyle = "rgb(142, 195, 227)";
+      loadingContext.fillRect(0, 0, canvas.width, canvas.height);
+      loadingContext.font = '2em Arial';
+      loadingContext.textAlign = 'center';
+      loadingContext.fillStyle = "rgb(11, 86, 117)";
+      loadingContext.fillText(text, canvas.width / 2, canvas.height / 2);
+    }
+
+    var Module = {
+      arguments: ["./game.love"],
+      INITIAL_MEMORY: 256000000,
+      printErr: console.error.bind(console),
+      canvas: (function () {
+        var canvas = document.getElementById('canvas');
+        canvas.addEventListener("webglcontextlost", function (e) {
+          alert('WebGL context lost. Reload the page.');
+          e.preventDefault();
+        }, false);
+        return canvas;
+      })(),
+      setStatus: function (text) {
+        if (text) {
+          drawLoadingText(text);
+        } else if (Module.remainingDependencies === 0) {
+          document.getElementById('loadingCanvas').style.display = 'none';
+          document.getElementById('canvas').style.visibility = 'visible';
+        }
+      },
+      totalDependencies: 0,
+      remainingDependencies: 0,
+      monitorRunDependencies: function (left) {
+        this.remainingDependencies = left;
+        this.totalDependencies = Math.max(this.totalDependencies, left);
+        Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+      }
+    };
+    Module.setStatus('Downloading...');
+    window.onerror = function (event) {
+      Module.setStatus('Exception thrown, see console');
+      Module.setStatus = function (text) {
+        if (text) Module.printErr('[post-exception status] ' + text);
+      };
+    };
+
+    function applicationLoad(e) {
+      Love(Module);
+    }
+  </script>
+
+  <script type="text/javascript" src="game.js?v=517e3f53-625a-465c-bf45-a326846f4beb"></script>
+  <script async type="text/javascript" src="love.js" onload="applicationLoad(this)"></script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"d81a02470a2942aa85f80037a05ddeec","r":1,"spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
